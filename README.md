@@ -1,27 +1,28 @@
 _This repo was forked from [ArduinoMoonBoardLED: A Simple Arduino MoonBoard Bluetooth
-Low Energy (BLE) LED System](https://github.com/Uberi/Arduino-HardwareBLESerial)._
+Low Energy (BLE) LED System](https://github.com/FabianRig/ArduinoMoonBoardLED)._
 
 ## Introduction
 
 This repo contains all the info about our MoonBoard build. The code and BOM is heavily
-based on the forked proejct, but lots of changes have been made to support our
+based on the forked project, but lots of changes have been made to support our
 controller+toolchain.
 
+After starting to get this working, I also came across
+https://github.com/labs-tibox/moonboard-esp32-ledble. I wanted to figure this esp32
+stuff out on my own as a little challenge, so I didn't use any of that code. But cool to
+see others are forking Uberi's project for their own boards!
+
 This project aims at providing an easy to use solution for building your own MoonBoard
-LED system using an Arduino or Arduino-compatible controller. It is both compatible with
-a normal MoonBoard as well as with the MoonBoard Mini.
+LED system using an esp32-based controller. It is both compatible with a normal
+MoonBoard as well as with the MoonBoard Mini.
 
-This project is compatible with the "new" MoonBoard app. All features (show beta, show
-lights above holds) of the app can be used. Multiple users can connect at the same time
-(multi user support).
+This project is compatible with the old and the new MoonBoard app. All features (show
+beta, show lights above holds) of the app can be used. Multiple users can connect at the
+same time (multi user support).
 
-Update (2026): It is compatible with the updated MoonBoard app version! However, many
-users report general problems with the app (both on Android as well as on Apple
-devices). In case of problems you might try ![boardsesh](
-https://github.com/boardsesh/boardsesh) as an alternative.
-
-![mini_benchmark](
-https://user-images.githubusercontent.com/88741530/129411463-636b222b-e963-4542-a1dd-b33eae562bf2.jpg)
+The new MoonBoard app is not the best experience. If the old one doesn't kick you out,
+I'd keep using that (I can, friend can't for some reason). Might move to ![boardsesh](
+https://github.com/boardsesh/boardsesh) some day.
 
 ## Please READ THIS FIRST
 
@@ -30,17 +31,19 @@ https://user-images.githubusercontent.com/88741530/129411463-636b222b-e963-4542-
 - This is a project which requires some work and still might not work as well as the
   original.
 - To be absolutely clear: This project is provided as-is. I take absolutely no
-  responsibility that it works as expected. In fact, it might break at any time. You
-  have been warned!
-- Never power the Arduino only without powering the LEDs when the data wire is connected
-  to the LED string! This may destroy the first LED! Just use the same power source for
-  both of them and don't disconnect it.
+  responsibility that it works as expected. In fact, it might break at any time.
+- Power must be provided to the LEDs when the data wire is connected. It is possible to
+  damage the LEDs if only data is connected and the esp32 is powered on. Be mindful of
+  this when testing/flashing/etc.
 
 ## Thanks
 
-All the heavy lifting in this project is done by two awesome libraries: NeoPixelBus (for
-the LED string) and HardwareBLESerial (for BLE functionality). They make it possible to
-keep this project quite short, easy to understand, and easily maintainable.
+- Shopping list I heavily followed:
+  https://github.com/FabianRig/ArduinoMoonBoardLED/issues/32#issuecomment-3632390737
+- Library for esp32 BLE:
+  https://github.com/espressif/arduino-esp32/blob/master/libraries/BLE/examples/UART/UART.ino
+- NeoPixelBus: LEDs
+- FabianRig for the original project
 
 ## Wiring
 
@@ -48,23 +51,14 @@ The LED strip has three wires: +5V, GND and data. Usually, blue is GND ("negativ
 brown is +5V ("positive"), yellow/green is data. Please double-check! You can find a
 wiring diagram at the bottom of this page.
 
-Connect the data line to pin D2 of the Arduino (unless you changed it in config.h). It
+Connect the data line to pin 2 of the esp32 (unless you changed it in config.h). It
 might be a good idea to use a resistor (e.g. 330 ohms) in the data line! In case a 330
-ohms resistor doesn't work, you might try a lower one (e.g. 220 ohms).
+ohms resistor doesn't work, you might try a lower one (e.g. 220 ohms). I used 220 ohm;
+330 ohms resulted in flickering LEDs.
 
-Important: Make sure that both the Arduino and the LED string share GND! Simply power
-both the LED string and the Arduino by the same power source. Use the USB connection for
+Important: Make sure that both the esp32 and the LED string share GND! Simply power both
+the LED string and the esp32 by the same power source. Use the USB connection for
 flashing and debugging only! If GND is not connected, the LED string will not work.
-
-## How to use (Windows and Linux via a Package Manager)
-
-1. Download and install Visual Studio Code.
-2. Install PlatformIO in Visual Studio Code.
-3. Download and open this project. To do so, either download it as a zip file or git
-   clone it.
-4. Adjust config.h settings to your needs (Moonboard type, brightness).
-5. Compile and flash to an Arduino Nano 33 BLE.
-6. Use the MoonBoard app to connect to the Arduino and show the problems on your board!
 
 ## How to use (Linux, command line)
 
@@ -95,9 +89,10 @@ arduino-cli upload -p /dev/ttyUSB0 -b esp32:esp32:esp32 .
 arduino-cli monitor -p /dev/ttyUSB0 -c baudrate=115200 -b esp32:esp32:esp32
 ```
 
-8. Use the MoonBoard app to connect to the Arduino and show the problems on your board!
+8. Use the MoonBoard app to connect to the esp32 and show the problems on your board!
 
 ## Advanced: LED Mapping
+
 The most common LED wiring pattern goes like this (front view):
 - start bottom left (A1),
 - up the column (to A12),
@@ -118,13 +113,5 @@ etc. Adjust this to your needs if you have a custom wiring and/or want to skip L
 facilitate wiring your LEDs at the back of your board.
 
 ## Pictures
-![led_test](
-https://user-images.githubusercontent.com/88741530/129411527-84e11098-1192-4a29-a052-b712ad3ca17c.jpg)
-![mini_back](
-https://user-images.githubusercontent.com/88741530/129411542-174241cc-c898-45f9-965f-cb75b34a1869.jpg)
-![box](
-https://user-images.githubusercontent.com/88741530/129411548-5262a5c9-6b06-4bc8-9d68-e9e363823fdb.jpg)
-![arduino_wiring](
-https://user-images.githubusercontent.com/88741530/129411556-ead82345-6687-478b-b9a4-95f1d1ac40c2.jpg)
-![wiring](
-https://github.com/FabianRig/ArduinoMoonBoardLED/assets/88741530/91c049ea-f41a-45a3-8c80-8d3ef9820e9d)
+
+TODO
